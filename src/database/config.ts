@@ -3,8 +3,11 @@ import {
   type, host, username, password, database, migrations, cli,
 } from '../../ormconfig'
 
+const { NODE_ENV } = process.env
+
 // Indicador de ambiente de produção ou stage
-// const isServer: boolean = NODE_ENV === 'production' || NODE_ENV === 'stage' ? true : false
+// const isServer: boolean = !!(NODE_ENV === 'production' || NODE_ENV === 'stage')
+const isServer: boolean = !!(NODE_ENV === 'production' || NODE_ENV === 'stage')
 
 const connectionConfig: ConnectionOptions = {
   type,
@@ -12,9 +15,9 @@ const connectionConfig: ConnectionOptions = {
   username,
   password,
   database,
-  migrations,
-  cli,
-  entities: ['**/models/**.ts'],
+  migrations: !isServer ? migrations : null,
+  cli: !isServer ? cli : null,
+  entities: [`**/models/**.${isServer ? 'js' : 'ts'}`],
 }
 
 export default async () => {
